@@ -4,7 +4,7 @@
 # Usage: ./download_visible_human_wget.sh [output_directory]
 
 OUTPUT_DIR="${1:-visible_human_mri}"
-BASE_URL="https://data.lhncbc.nlm.nih.gov/public/Visible-Human/Additional-Head-Images/MR_CT_DICOM/MRI/"
+BASE_URL="https://data.lhncbc.nlm.nih.gov/public/Visible-Human/Additional-Head-Images/MR_CT_DICOM/MRI/index.html"
 
 echo "=================================================="
 echo "Visible Human MRI DICOM Downloader (wget)"
@@ -41,7 +41,9 @@ mkdir -p "$OUTPUT_DIR"
 # -R: reject index.html files
 # --wait=1: wait 1 second between downloads (be nice to server)
 # -P: prefix (output directory)
-# --no-clobber: don't re-download existing files
+# --continue: resume partially downloaded files
+# --timestamping: only download newer files (skip already completed)
+# --user-agent: set browser-like user agent to avoid 403 errors
 
 wget \
     --recursive \
@@ -52,8 +54,11 @@ wget \
     --wait=1 \
     --random-wait \
     --limit-rate=2m \
-    --no-clobber \
+    --continue \
+    --timestamping \
     --directory-prefix="$OUTPUT_DIR" \
+    --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+    --execute robots=off \
     "$BASE_URL"
 
 echo ""
